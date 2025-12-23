@@ -247,9 +247,14 @@ void driveToDist(double distance_mm, int dir, double time_limit_msec, bool exit,
     // Store initial distance sensor value
     double start_distance = frontDistanceSensor.value() / 25.4;
     stopChassis(vex::brakeType::coast);
+    int drive_direction;
     is_turning = true;
     double threshold = 0.5;
-    int drive_direction = dir;
+    if(distance_mm < start_distance){
+      drive_direction = -1;
+    } else{
+      drive_direction = 1;
+    }
 
     double max_slew_fwd = drive_direction > 0 ? max_slew_accel_fwd : max_slew_decel_rev;
     double max_slew_rev = drive_direction > 0 ? max_slew_decel_fwd : max_slew_accel_rev;
@@ -300,7 +305,7 @@ void driveToDist(double distance_mm, int dir, double time_limit_msec, bool exit,
     while (((!pid_distance.targetArrived()) && Brain.timer(msec) - start_time <= time_limit_msec && exit)) {
 
         // Calculate current distance and heading
-        current_distance = fabs(frontDistanceSensor.value()/25.4 - distance_mm);
+        current_distance = frontDistanceSensor.value()/25.4;
         current_angle = getInertialHeading();
 
         left_output = pid_distance.update(current_distance) * drive_direction;

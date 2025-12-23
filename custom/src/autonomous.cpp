@@ -704,6 +704,55 @@ void awp(int isRed){
     }
     return 0;
   });
+  storeIntake();
+  driveTo(-2, 2000, true, 10);
+  driveChassis(12, 12);
+  vex::wait(200, msec);
+  driveChassis(7, 7);
+  vex::wait(1300, msec);
+  driveChassis(11, 11);
+  vex::wait(300, msec);
+  turnToAngle(0, 500, true, 7);
+  driveToDist(29, 1, 2000, true, 4);
+  resetOdometry(-72 + leftDistanceSensor.value()/25.4, 72 - frontDistanceSensor.value()/25.4);
+  logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
+  vex::wait(10, msec);
+  turnToAngle(90, 1200, true, 11);
+  driveChassis(-5,-5);
+  vex::wait(300, msec);
+  driveChassis(0,0);
+  logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
+  resetOdometry(-72, 72 - leftDistanceSensor.value()/25.4);
+  moveToPoint(-36, 36, 1, 2000, true, 7, false);
+  matchloader.set(true);
+  vex::wait(250, msec);
+  turnToAngle(-30, 2000, true, 10);
+  moveToPoint(-23,10, -1, 2000, true, 6, false);
+  driveChassis(-3, -3);
+  vex::wait(150, msec);
+  outtake();
+  middleGoal.set(true);
+  turnToAngle(-40, 500, true, 7);
+  scoreMiddleGoal();
+  vex::wait(900, msec);
+  driveTo(2.5, 1200, true, 8);
+  driveTo(-2.5, 1200, true, 8);
+  driveTo(2.5, 1200, true, 8);
+  driveTo(-2.5, 1200, true, 8);
+  driveTo(2.5, 1200, true, 8);
+  driveTo(-2.5, 1200, true, 8);
+
+
+
+  
+  /*
+  vex::task antiJamF([]{
+    while(1){
+      antiJamTask();
+      vex::wait(20, msec);
+    }
+    return 0;
+  });
   // Use this for tuning linear and turn pid
   storeIntake();
   //awp
@@ -777,6 +826,7 @@ void awp(int isRed){
     return 0;
   });
   driveToHeading(-35, -92, 3000, true, 10);
+  */
 }
 
 void matchloaderLeftLongAndMid(int isRed){
