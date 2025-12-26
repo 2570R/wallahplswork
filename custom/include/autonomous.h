@@ -15,5 +15,6 @@ void rightLongAndLow(int isRed);
 void awp(int isRed);
 void awp2();
 void test();
-void left4();
-void rifour();
+void left4(int isRed);
+void rifour(int isRed);
+void gimmickMatchloaderLeftLongAndMid(int isRed);

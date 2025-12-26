@@ -24,6 +24,7 @@ extern motor hood;
 extern digital_out leftWing;
 extern digital_out middleGoal;
 extern digital_out matchloader;
+extern digital_out midGoalDescore;
 extern optical ballSensTop;
 extern PID lateralPID;
 extern PID turnPID;

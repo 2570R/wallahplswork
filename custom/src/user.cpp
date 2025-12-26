@@ -61,10 +61,10 @@ void runAutonomous() {
       leftLongAndMidDisrupt(color_selected);
       break;
     case 5:
-      left4();
+      left4(color_selected);
       break;
     case 6:
-      rifour();
+      rifour(color_selected);
       break;
     case 7:
       matchloaderLeftFourBall(color_selected);
@@ -78,6 +78,8 @@ void runAutonomous() {
     case 10:
       rightLongAndLow(color_selected);
       break;
+    case 11:
+      gimmickMatchloaderLeftLongAndMid(color_selected);
   }
   
 }
@@ -123,16 +125,19 @@ void runDriver() {
     button_right_arrow = controller_1.ButtonRight.pressing();
     
     // default tank drive or replace it with your preferred driver code here: 
-    driveChassis(ch3 * 0.12 + ch1 * 0.123, ch3 * 0.12 - ch1 * 0.123);
+    driveChassis(ch3 * 0.121 + ch1 * 0.126, ch3 * 0.121 - ch1 * 0.126);
     //chassis.controllerFeedbackSpin(false);
     
-    if(r1){
+    if(r1&&!r2){
       storeIntake();
       middleGoal.set(false);
-    } else if(r2){
+    } else if(r2&&!r1){
       scoreLongGoal();
       middleGoal.set(false);
-    } else if(l1){
+    } else if(r1 && r2){
+      midGoalDescore.set(true);
+    }
+    else if(l1){
       middleGoal.set(true);
       scoreMiddleGoal();
     } else if(l2){
@@ -146,6 +151,7 @@ void runDriver() {
       stopIntake();
       leftWing.set(true);
       middleGoal.set(false);
+      midGoalDescore.set(false);
     }
     if(controller_1.ButtonDown.PRESSED){
       downPressed = !downPressed;
@@ -197,6 +203,7 @@ void runPreAutonomous() {
         case 8: Brain.Screen.printAt(5, 90, "Matchloader Right 4 Wing"); break;
         case 9: Brain.Screen.printAt(5, 90, "Matchloader Left Long + Mid"); break;
         case 10: Brain.Screen.printAt(5, 90, "Right Long And Low"); break;
+        case 11: Brain.Screen.printAt(5, 90, "Gimmick Auto"); break;
       }
 
       if (Brain.Screen.pressing()) {
@@ -216,10 +223,10 @@ void runPreAutonomous() {
       Brain.Screen.printAt(5, 40, "Tap to cycle, Hold to confirm");
       Brain.Screen.printAt(5, 60, "---------------------");
 
-      if (color_selected == 0)
-        Brain.Screen.printAt(5, 90, "RED");
-      else
-        Brain.Screen.printAt(5, 90, "BLUE");
+      switch (color_selected) {
+        case 0: Brain.Screen.printAt(5, 90, "Red"); break;
+        case 1: Brain.Screen.printAt(5, 90, "Blue"); break;
+      }
 
       if (Brain.Screen.pressing()) {
         uint32_t pressTime = Brain.timer(msec);
@@ -228,7 +235,7 @@ void runPreAutonomous() {
         if (Brain.timer(msec) - pressTime > 500) {
           preAutonState = SHOW_SELECTION;
         } else {
-          color_selected = !color_selected;
+          color_selected = (color_selected + 1) % 2;
         }
       }
     }
@@ -251,6 +258,7 @@ void runPreAutonomous() {
         case 8: Brain.Screen.printAt(20, 90, "Matchloader Right 4 Wing"); break;
         case 9: Brain.Screen.printAt(20, 90, "Matchloader Left Long + Mid"); break;
         case 10: Brain.Screen.printAt(20, 90, "Right Long And Low"); break;
+        case 11: Brain.Screen.printAt(20, 90, "Gimmick Auto"); break;
       }
     
       Brain.Screen.printAt(5, 120, "Color:");
@@ -284,7 +292,7 @@ void runPreAutonomous() {
       Brain.Screen.printAt(20, 180, "hue: %.2f", ballSensTop.hue());
       Brain.Screen.printAt(20, 200, "battery: %.2f", vexBatteryCapacityGet);
 
-    }
+    } 
 
     wait(20, msec);
   }

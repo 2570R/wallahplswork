@@ -35,9 +35,9 @@ void scoreLongGoal(){
 
 void scoreMiddleGoal(){
     intakeSpeed = 12;
-    hoodSpeed = 10;
+    hoodSpeed = -6;
     intake.spin(forward, 12, voltageUnits::volt);
-    hood.spin(forward, 10, voltageUnits::volt);
+    hood.spin(forward, -6, voltageUnits::volt);
 }
 
 /**
@@ -52,9 +52,9 @@ void outtake(){
 }
 void storeIntake(){
     intakeSpeed = 12;
-    hoodSpeed = -3;
+    hoodSpeed = -0.2;
     intake.spin(forward, 12, voltageUnits::volt);
-    hood.spin(forward, -3, voltageUnits::volt);
+    hood.spin(forward, -0.2, voltageUnits::volt);
 }
 void antiJamTask(){
         if((intakeSpeed != 0 && fabs(intake.velocity(vex::velocityUnits::rpm)) < 5 && intake.torque(vex::torqueUnits::Nm) > 0.2)){

@@ -168,7 +168,7 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
   stopChassis(vex::brakeType::coast);
   is_turning = true;
   double threshold = 1;
-  PID pid = turnPID;
+  PID pid = PID(turn_kp, turn_ki, turn_kd);
 
   // Normalize and set PID target
   turn_angle = normalizeTarget(turn_angle);
@@ -176,13 +176,10 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
   pid.setIntegralMax(0);  
   pid.setIntegralRange(3);
   pid.setSmallBigErrorTolerance(threshold, threshold * 3);
-  pid.setSmallBigErrorDuration(50, 50); //250 before
+  pid.setSmallBigErrorDuration(50, 250);
   pid.setDerivativeTolerance(threshold * 4.5);
 
-  // Draw baseline for visualization
-  double draw_amplifier = 230 / fabs(turn_angle);
   Brain.Screen.clearScreen(black);
-  Brain.Screen.setPenColor(red);
 
   // PID loop for turning
   double start_time = Brain.timer(msec);
@@ -195,10 +192,9 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
     while (getInertialHeading() < turn_angle && Brain.timer(msec) - start_time <= time_limit_msec) {
       current_heading = getInertialHeading();
       output = pid.update(current_heading); // PID update for heading
-      // Draw heading trace
-      Brain.Screen.drawLine(index * 3, fabs(previous_heading) * draw_amplifier, (index + 1) * 3, fabs(current_heading * draw_amplifier));
-      index++;
       previous_heading = current_heading;
+      // Clamp output
+      if(output < min_output) output = min_output;
       if(output > max_output) output = max_output;
       else if(output < -max_output) output = -max_output;
       driveChassis(output, -output);
@@ -209,9 +205,8 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
     while (getInertialHeading() > turn_angle && Brain.timer(msec) - start_time <= time_limit_msec) {
       current_heading = getInertialHeading();
       output = pid.update(current_heading);
-      Brain.Screen.drawLine(index * 3, fabs(previous_heading) * draw_amplifier, (index + 1) * 3, fabs(current_heading * draw_amplifier));
-      index++;
       previous_heading = current_heading;
+      if(output < min_output) output = min_output;
       if(output > max_output) output = max_output;
       else if(output < -max_output) output = -max_output;
       driveChassis(-output, output);
@@ -222,8 +217,6 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
     while (!pid.targetArrived() && Brain.timer(msec) - start_time <= time_limit_msec) {
       current_heading = getInertialHeading();
       output = pid.update(current_heading);
-      Brain.Screen.drawLine(index * 3, fabs(previous_heading) * draw_amplifier, (index + 1) * 3, fabs(current_heading * draw_amplifier));
-      index++;
       previous_heading = current_heading;
       if(output > max_output) output = max_output;
       else if(output < -max_output) output = -max_output;
@@ -231,135 +224,12 @@ void turnToAngle(double turn_angle, double time_limit_msec, bool exit, double ma
       wait(10, msec);
     }
   }
-  logger.info("end x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
-  Brain.Screen.clearScreen(red);
-  
   if(exit) {
     stopChassis(vex::hold);
-    
   }
   correct_angle = turn_angle;
   is_turning = false;
-}
-
-
-void driveToDist(double distance_mm, int dir, double time_limit_msec, bool exit, double max_output){
-    // Store initial distance sensor value
-    double start_distance = frontDistanceSensor.value() / 25.4;
-    stopChassis(vex::brakeType::coast);
-    int drive_direction;
-    is_turning = true;
-    double threshold = 0.5;
-    if(distance_mm < start_distance){
-      drive_direction = -1;
-    } else{
-      drive_direction = 1;
-    }
-
-    double max_slew_fwd = drive_direction > 0 ? max_slew_accel_fwd : max_slew_decel_rev;
-    double max_slew_rev = drive_direction > 0 ? max_slew_decel_fwd : max_slew_accel_rev;
-    bool min_speed = false;
-
-    if(!exit) {
-        // Adjust slew rates and min speed for chaining
-        if(!dir_change_start && dir_change_end) {
-            max_slew_fwd = drive_direction > 0 ? 24 : max_slew_decel_rev;
-            max_slew_rev = drive_direction > 0 ? max_slew_decel_fwd : 24;
-        }
-        if(dir_change_start && !dir_change_end) {
-            max_slew_fwd = drive_direction > 0 ? max_slew_accel_fwd : 24;
-            max_slew_rev = drive_direction > 0 ? 24 : max_slew_accel_rev;
-            min_speed = true;
-        }
-        if(!dir_change_start && !dir_change_end) {
-            max_slew_fwd = 24;
-            max_slew_rev = 24;
-            min_speed = true;
-        }
-    }
-
-    distance_mm = fabs(distance_mm); // Ensure distance is positive for PID
-    PID pid_distance = lateralPID;
-    PID pid_heading = correctPID;
-
-    // Configure PID controllers
-    pid_distance.setTarget(distance_mm);
-    pid_distance.setIntegralMax(3);  
-    pid_distance.setSmallBigErrorTolerance(threshold, threshold * 3);
-    pid_distance.setSmallBigErrorDuration(50, 50);
-    pid_distance.setDerivativeTolerance(5);
-
-    pid_heading.setTarget(normalizeTarget(correct_angle));
-    pid_heading.setIntegralMax(0);  
-    pid_heading.setIntegralRange(1);
-    pid_heading.setSmallBigErrorTolerance(0, 0);
-    pid_heading.setSmallBigErrorDuration(0, 0);
-    pid_heading.setDerivativeTolerance(0);
-    pid_heading.setArrive(false);
-
-    double start_time = Brain.timer(msec);
-    double left_output = 0, right_output = 0, correction_output = 0;
-    double current_distance = 0, current_angle = 0;
-    Brain.Screen.setPenColor(black);
-    // Main PID loop for driving straight using distance sensor
-    while (((!pid_distance.targetArrived()) && Brain.timer(msec) - start_time <= time_limit_msec && exit)) {
-
-        // Calculate current distance and heading
-        current_distance = frontDistanceSensor.value()/25.4;
-        current_angle = getInertialHeading();
-
-        left_output = pid_distance.update(current_distance) * drive_direction;
-        right_output = left_output;
-        correction_output = pid_heading.update(current_angle);
-
-        // Minimum Output Check
-        if(min_speed) {
-            scaleToMin(left_output, right_output, min_output);
-        }
-        if(!exit) {
-            left_output = 24 * drive_direction;
-            right_output = 24 * drive_direction;
-        }
-
-        // Apply heading correction
-        left_output += correction_output;
-        right_output -= correction_output;
-
-        if(fabs(current_distance - distance_mm) < 2){
-          heading_correction = 0;
-        }
-
-        // Max Output Check
-        scaleToMax(left_output, right_output, max_output);
-
-        // Max Acceleration/Deceleration Check
-        if(prev_left_output - left_output > max_slew_rev) {
-            left_output = prev_left_output - max_slew_rev;
-        }
-        if(prev_right_output - right_output > max_slew_rev) {
-            right_output = prev_right_output - max_slew_rev;
-        }
-        if(left_output - prev_left_output > max_slew_fwd) {
-            left_output = prev_left_output + max_slew_fwd;
-        }
-        if(right_output - prev_right_output > max_slew_fwd) {
-            right_output = prev_right_output + max_slew_fwd;
-        }
-
-        prev_left_output = left_output;
-        prev_right_output = right_output;
-
-        driveChassis(left_output, right_output);
-        wait(10, msec);
-    }
-    logger.info("end x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
-    Brain.Screen.clearScreen(red);
-    if(exit) {
-        prev_left_output = 0;
-        prev_right_output = 0;
-        stopChassis(vex::hold);
-    }
-    is_turning = false;
+  Brain.Screen.clearScreen(red);
 }
 /*
  * Drives the robot a specified distance (in inches) using PID control.

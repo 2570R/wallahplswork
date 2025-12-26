@@ -43,6 +43,7 @@ digital_out matchloader = digital_out(Brain.ThreeWirePort.C);
 digital_out middleGoal = digital_out(Brain.ThreeWirePort.B);
 digital_out leftWing = digital_out(Brain.ThreeWirePort.A);
 digital_out middleGoalHood = digital_out(Brain.ThreeWirePort.B);
+digital_out midGoalDescore = digital_out(Brain.ThreeWirePort.H);
 distance backDistanceSensor = distance(PORT8);
 distance frontDistanceSensor = distance(PORT15);
 distance leftDistanceSensor = distance(PORT3);

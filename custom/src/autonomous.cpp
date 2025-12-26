@@ -437,7 +437,7 @@ void leftLongAndMid(int isRed){
   
   driveChassis(1,1);
   vex::wait(300,msec);
-  moveToPoint(-6, 23, -1, 3000, false, 5);
+  moveToPoint(-6, 23 -1, 3000, false, 5);
   //matchloader.set(false);
   turnToAngle(-138, 1000, true, 7);
   vex::task middleready([]{
@@ -650,11 +650,11 @@ void rightLongAndLow(int isRed){
   });
   storeIntake();
   matchloader.set(true);
-  moveToPoint(-1, 22, 1, 1500, false, 12, false);
-  moveToPoint(12, 33, 1, 1500, false, 10, false);
+  moveToPoint(-1, 21, 1, 1500, false, 12, false);
+  moveToPoint(12, 32, 1, 1500, false, 10, false);
   turnToAngle(90, 300, true, 10);
-  driveChassis(9.5, 9.5);
-  vex::wait(800, msec);
+  driveChassis(7, 7);
+  vex::wait(900, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, -72 + leftDistanceSensor.value()/25.4);
   resetAngle(getInertialHeading(false) + 180);
   logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
@@ -665,29 +665,56 @@ void rightLongAndLow(int isRed){
   colorSortLong(isRed, 1200);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, -72 + leftDistanceSensor.value()/25.4);
   logger.info("end x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
+  vex::wait(10, msec);
   turnToAngle(0, 1500, true, 12);
   storeIntake();
   resetOdometry(-72 + leftDistanceSensor.value()/25.4, y_pos);
   vex::wait(10, msec);
   logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
-  moveToPoint(-30, -34.5, 1, 2000, false, 5);
-  matchloader.set(true);
-  vex::wait(150, msec);
-  matchloader.set(false);
+  vex::task matchloaderdown([]{
+    vex::wait(500, msec);
+    matchloader.set(true);
+    return 0;
+  });
   //moveToPoint(-18, -37, 1, 2000, true, 8);
+  moveToPoint(-30, -29, 1, 2000, false, 5);
+  matchloader.set(false);
+  swing(50, 1, 2000, true, 6);
+  driveTo(9.7, 2000, true, 8);
   turnToAngle(45, 800, true, 10);
-  moveToPoint(-15, -13.5, 1, 2000, false, 7);
-  turnToAngle(45, 800, true, 10);
-  driveTo(-4, 2000, true, 8);
-  driveChassis(-0.5, -0.5);
-  outtake();
-  vex::wait(1500, msec);
-  driveChassis(0,0);
-  moveToPoint(-35, -35.2, -1, 2000, false, 8);
+  manualIntake(-8, 0);
+  driveChassis(-1, -1);
+  vex::wait(900, msec);
+  driveTo(5, 2000, true, 6);
+  moveToPoint(-35, -35.7, -1, 2000, false, 8);
   turnToAngle(90, 800, true, 10);
   driveToHeading(19, 90, 3000, true, 5);
   turnToAngle(70, 800, true, 10);
 
+
+
+  /*
+  turnToAngle(0, 1500, true, 12);
+  storeIntake();
+  resetOdometry(-72 + leftDistanceSensor.value()/25.4, y_pos);
+  vex::wait(10, msec);
+  logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
+  moveToPoint(-30, -29, 1, 2000, true, 5);
+  //matchloader.set(true);
+  vex::wait(300, msec);
+  //moveToPoint(-18, -37, 1, 2000, true, 8);
+  moveToPoint(-15, -31, -1, 2000, true, 7);
+  turnToAngle(45, 800, true, 10);
+  driveTo(3, 2000, true, 8);
+  driveChassis(-0.5, -0.5);
+  outtake();
+  vex::wait(1500, msec);
+  driveTo(3, 2000, true, 6);
+  moveToPoint(-35, -35.2, -1, 2000, false, 8);
+  turnToAngle(90, 800, true, 10);
+  driveToHeading(19, 90, 3000, true, 5);
+  turnToAngle(70, 800, true, 10);
+  */
 
   
 
@@ -710,21 +737,19 @@ void awp(int isRed){
   //awp
   driveTo(5, 600, true, 8);
   resetOdometry(0,5);
-  moveToPoint(0.2, -32, -1, 1500, false, 10, false);
+  moveToPoint(0.2, -36, -1, 1500, false, 10, false);
   matchloader.set(true);
-  moveToPoint(0.2, -36, -1, 1500, true, 5, false);
+  moveToPoint(0.2, -42.4, -1, 1500, true, 5, false);
   //moveToPoint(-0.2, -34, -1, 2000, true, 7);
   turnToAngle(-90, 800, true, 10);
-  driveChassis(6.7, 6.7);
-  vex::wait(615, msec);
-  driveChassis(2, 2);
-  vex::wait(400, msec);
+  driveChassis(7, 7);
+  vex::wait(1015, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, -72 + leftDistanceSensor.value()/25.4);
   vex::wait(10, msec);
   moveToPoint(-42, -54.7, -1, 2000, false, 10);
   driveToHeading(-8, -90, 600, true, 7);
   scoreLongGoal();
-  vex::wait(500, msec);
+  turnToAngle(-90, 500, true, 10);
   matchloader.set(false);
   vex::wait(880, msec);
   driveChassis(1,1);
@@ -747,29 +772,34 @@ void awp(int isRed){
   });
   moveToPoint(-30.2, 17.5, 1, 2000, true, 7);
   vex::task offm2([]{
-    vex::wait(50, msec);
+    vex::wait(100, msec);
     outtake();
-    vex::wait(200, msec);
+    vex::wait(100, msec);
     stopIntake();
-    middleGoal.set(true);
     return 0;
   });
   boomerang(-16, -2, -1, -40, 0.6, 1000, true, 7);
+  middleGoal.set(true);
   driveChassis(-1, -1);
   vex::wait(50, msec);
-  scoreMiddleGoal();
-  vex::wait(800, msec);
-  stopIntake();
+  manualIntake(12, -5.5);
+  vex::wait(980, msec);
+  outtake();
   middleGoal.set(false);
-  boomerang(-50, 29.6, 1, -50, 0.3, 3000, true, 10);
+  vex::task holdIntake([]{
+    vex::wait(90, msec);
+    stopIntake();
+    return 0;
+  });
+  boomerang(-50, 27, 1, -50, 0.3, 3000, false, 10);
   storeIntake();
-  turnToAngle(-90, 900, true, 10);
+  boomerang(-60, 29.1, 1, -90, 0.3, 3000, false, 10);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
   vex::wait(10, msec);
-  driveChassis(6, 6);
-  vex::wait(770, msec);
+  driveChassis(4, 4);
+  vex::wait(570, msec);
   driveChassis(2, 2);
-  vex::wait(200, msec);
+  vex::wait(400, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
   vex::wait(10, msec);
   vex::task scoreLong2([]{
@@ -777,9 +807,64 @@ void awp(int isRed){
     scoreLongGoal();
     return 0;
   });
-  driveToHeading(-35, -92, 3000, true, 10);
+  driveToHeading(-35, -90, 3000, true, 10);
 }
 
+void gimmickMatchloaderLeftLongAndMid(int isRed){
+  vex::task antiJamF([]{
+    while(1){
+      antiJamTask();
+      vex::wait(20, msec);
+    }
+    return 0;
+  });
+  // Use this for tuning linear and turn pid
+  storeIntake();
+  matchloader.set(true);
+  moveToPoint(1, 16.6, 1, 1500, false, 12, false);
+  boomerang(-9, 21, 1,-90, 0.3, 1500, false, 10, false);
+  driveChassis(5.7, 5.7);
+  vex::wait(1000, msec);
+  resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
+  vex::wait(10, msec);
+  moveToPoint(-40, 53.5, -1, 2000, false, 10, false);
+  driveToHeading(-6.7, -90, 800, true, 8);
+  matchloader.set(false);
+  colorSortLong(isRed, 1200);
+  resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
+  turnToAngle(-178.5, 2000, true, 12);
+  storeIntake();
+  resetOdometry(-72 + rightDistanceSensor.value()/25.4, y_pos);
+  moveToPoint(-30, 38, 1, 2000, false, 5.5, false);
+  min_output = 7;
+  //turnToAngle(36, 2000, true, 10);
+  moveToPoint(-27.9, 58, 1, 2000, false, 8, false);
+  driveChassis(2, 2);
+  vex::wait(650, msec);
+  driveChassis(0,0);
+  vex::wait(150, msec);
+  moveToPoint(-31, 51, -1, 2000, false, 8, false);
+  vex::task readyMid([]{
+    vex::wait(150, msec);
+    outtake();
+    vex::wait(80, msec);
+    stopIntake();
+    vex::wait(220, msec);
+    return 0;
+  });
+  moveToPoint(-27, 30, -1, 2000, true, 6, false);
+  driveChassis(-2, -2);
+  vex::wait(50, msec);
+  middleGoal.set(true);
+  manualIntake(12, -5.5);
+  vex::wait(2000, msec);
+  stopIntake();
+  driveTo(11, 3000, 3000, 5.5);
+  midGoalDescore.set(true);
+  vex::wait(300, msec);
+  driveTo(-8, 3000, 3000, 5.5);
+
+}
 void matchloaderLeftLongAndMid(int isRed){
   vex::task antiJamF([]{
     while(1){
@@ -791,50 +876,50 @@ void matchloaderLeftLongAndMid(int isRed){
   // Use this for tuning linear and turn pid
   storeIntake();
   matchloader.set(true);
-  moveToPoint(1, 18, 1, 1500, false, 12, false);
-  moveToPoint(-9, 22, 1, 1500, false, 10, false);
-  turnToAngle(-90, 300, true, 10);
-  driveChassis(8, 8);
-  vex::wait(900, msec);
+  moveToPoint(1, 16.6, 1, 1500, false, 12, false);
+  boomerang(-9, 21, 1,-90, 0.3, 1500, false, 10, false);
+  driveChassis(5.7, 5.7);
+  vex::wait(1000, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
   vex::wait(10, msec);
-  moveToPoint(-40, 54.5, -1, 2000, false, 10, false);
-  driveToHeading(-8, -90, 800, true, 8);
+  moveToPoint(-40, 53.5, -1, 2000, false, 10, false);
+  driveToHeading(-6.7, -90, 800, true, 8);
   matchloader.set(false);
   colorSortLong(isRed, 1200);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
   turnToAngle(-178.5, 2000, true, 12);
   storeIntake();
   resetOdometry(-72 + rightDistanceSensor.value()/25.4, y_pos);
-  moveToPoint(-30, 41, 1, 2000, false, 5.5, false);
+  moveToPoint(-30, 38, 1, 2000, false, 5.5, false);
   min_output = 7;
   //turnToAngle(36, 2000, true, 10);
-  moveToPoint(-27, 58, 1, 2000, false, 8, false);
+  moveToPoint(-27.9, 58, 1, 2000, false, 8, false);
   driveChassis(2, 2);
   vex::wait(650, msec);
   driveChassis(0,0);
   vex::wait(150, msec);
-  moveToPoint(-29, 53, -1, 2000, false, 8, false);
+  moveToPoint(-31, 51, -1, 2000, false, 8, false);
   vex::task readyMid([]{
     vex::wait(150, msec);
     outtake();
-    vex::wait(150, msec);
+    vex::wait(80, msec);
     stopIntake();
-    vex::wait(150, msec);
-    middleGoal.set(true);
+    vex::wait(220, msec);
     return 0;
   });
-  moveToPoint(-25, 30, -1, 2000, true, 6, false);
+  moveToPoint(-27, 30, -1, 2000, true, 6, false);
   driveChassis(-2, -2);
-  scoreMiddleGoal();
-  vex::wait(1500, msec);
+  vex::wait(50, msec);
+  middleGoal.set(true);
+  manualIntake(12, -5.5);
+  vex::wait(2000, msec);
   stopIntake();
   driveChassis(0,0);
   leftWing.set(true);
   moveToPoint(-40, 52, 1, 2000, false, 8, false);
   turnToAngle(-88, 1200, true, 10);
   leftWing.set(false);
-  driveToHeading(-16, -88, 2000, true, 4);
+  driveToHeading(-14, -88, 2000, true, 4);
   turnToAngle(-60, 3000, true, 5);
   //turnToAngle(-45, 1200, true, 10);
 }
@@ -846,17 +931,17 @@ void matchloaderLeftFourBall(int isRed){
     }
     return 0;
   });
+  // Use this for tuning linear and turn pid
   storeIntake();
   matchloader.set(true);
-  moveToPoint(1, 18, 1, 1500, false, 12, false);
-  moveToPoint(-9, 19.9, 1, 1500, false, 10, false);
-  turnToAngle(-90, 300, true, 10);
-  driveChassis(8, 8);
-  vex::wait(800, msec);
+  moveToPoint(1, 17, 1, 1500, false, 12, false);
+  boomerang(-9, 22, 1,-90, 0.3, 1500, false, 10, false);
+  driveChassis(5.7, 5.7);
+  vex::wait(1000, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
   vex::wait(10, msec);
-  moveToPoint(-40, 54.5, -1, 2000, false, 10, false);
-  driveToHeading(-8, -90, 800, true, 8);
+  moveToPoint(-40, 53.5, -1, 2000, false, 10, false);
+  driveToHeading(-6.7, -90, 800, true, 8);
   matchloader.set(false);
   colorSortLong(isRed, 1200);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
@@ -872,7 +957,7 @@ void matchloaderLeftFourBall(int isRed){
 }
 
 void matchloaderRightFourBall(int isRed){
-  vex::task antiJamF([]{
+vex::task antiJamF([]{
     while(1){
       antiJamTask();
       vex::wait(20, msec);
@@ -881,16 +966,16 @@ void matchloaderRightFourBall(int isRed){
   });
   storeIntake();
   matchloader.set(true);
-  moveToPoint(-1, 22, 1, 1500, false, 12, false);
-  moveToPoint(12, 33, 1, 1500, false, 10, false);
-  turnToAngle(90, 300, true, 10);
-  driveChassis(8, 8);
-  vex::wait(800, msec);
+  moveToPoint(-1, 13, 1, 1500, false, 12, false);
+  boomerang(19, 29, 1, 90, 0.3, 1500, false, 10, false);
+  //turnToAngle(90, 300, true, 10);
+  driveChassis(7, 7);
+  vex::wait(1300, msec);
   resetOdometry(-72 + frontDistanceSensor.value()/25.4, -72 + leftDistanceSensor.value()/25.4);
   resetAngle(getInertialHeading(false) + 180);
   logger.info("dist reset end pos x: %.2f, y: %.2f, theta: %.2f", x_pos, y_pos, normalizeTarget(getInertialHeading()));
   vex::wait(10, msec);
-  moveToPoint(-42.5, -64, -1, 2000, false, 10, false);
+  moveToPoint(-42.5, -65, -1, 2000, false, 10, false);
   driveToHeading(-8, -90, 800, true, 8);
   matchloader.set(false);
   colorSortLong(isRed, 1200);
@@ -909,8 +994,7 @@ void matchloaderRightFourBall(int isRed){
 //todo
 void left7LongandWing(int isRed){
   
-  
-  vex::task antiJamF([]{
+ vex::task antiJamF([]{
     while(1){
       antiJamTask();
       vex::wait(20, msec);
@@ -967,7 +1051,6 @@ max_slew_accel_rev = 24;
   matchloader.set(true);
   driveToHeading(-17.5, 180, 1200, true, 5);
   turnToAngle(-135, 1200, true, 8);
-  //
   
 
 }
@@ -1000,35 +1083,31 @@ dir_change_end = true;
   vex::wait(300, msec);
   correct_angle = normalizeTarget(160);
   //moveToPoint(31, 10, 1, 2000, false, 12);
-  moveToPoint(42.6, -1, 1, 2000, false, 9);
+  moveToPoint(44, -1, 1, 2000, false, 9);
   turnToAngle(-180, 800, true, 7);
   driveChassis(6,6);
   vex::wait(0.95, sec);
-  moveToPoint(43.6, 5, -1, 2000, false, 8);
+  moveToPoint(48.5, 5, -1, 2000, false, 8);
   turnToAngle(-180, 800, true, 7);
   driveChassis(-8,-8);
   vex::wait(0.35, sec);
   driveChassis(-1,-1);
-  scoreLongGoal();
+  colorSortLong(isRed, 2000);
   driveChassis(0,0);
-  vex::wait(2, sec);
   stopIntake();
-  leftWing.set(true);
-  curveCircle(120, -14, 1000, false, 9);
-  driveTo(2.25, 3000, false, 10);
-  
-  vex::task wingdep([]{
-    vex::wait(150, msec);
-    leftWing.set(false);
-    return 0;
-  });
-  turnToAngle(-180, 800, true, 7);
-  driveTo(-31.5, 20000, true,4);
-  turnToAngle(-165, 900, true, 10);
-  stopChassis(brakeType::hold);
-  //
+  resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
+  turnToAngle(135, 2000, true, 12);
+  storeIntake();
+  resetOdometry(-72 + rightDistanceSensor.value()/25.4, y_pos);
+  driveToHeading(3, 135, 2000, false, 10);
+  turnToAngle(180, 1200, true, 10);
+  leftWing.set(false);
+  stopChassis(coast);
+  matchloader.set(true);
+  driveToHeading(-17.5, 180, 1200, true, 5);
+  turnToAngle(-135, 1200, true, 8);
 }
-void left4(){
+void left4(int isRed){
   
 
   
@@ -1049,8 +1128,8 @@ void left4(){
     return 0;
   });
   //goes to stack
-  moveToPoint(-9.3, 24, 1, 2000, false, 8);
-  turnToAngle(-150, 300, false, 7);
+  moveToPoint(-9.3, 24, 1, 2000, true, 8);
+ //turnToAngle(-155, 300, false, 7);
   heading_correction_kp = 0.67;
   correct_angle = normalizeTarget(-160);
   max_slew_accel_fwd = 24;
@@ -1058,24 +1137,21 @@ max_slew_decel_fwd = 24;
 max_slew_accel_rev = 24;
  max_slew_decel_rev = 24;
 dir_change_end = true;
-  moveToPoint(-23, -4, 1, 2000, true, 9);
+  moveToPoint(-30, 11.5, -1, 2000, true, 9, false);
   turnToAngle(180, 800, true, 7);
   driveToHeading(-17, 180, 1000, true, 8);
-  scoreLongGoal();
-  vex::wait(1.5, sec);
+  colorSortLong(isRed, 1500);
   stopIntake();
-  curveCircle(120, -14, 1000, false, 9);
-  driveTo(1.9, 3000, false, 10);
-  vex::task wingdep([]{
-    vex::wait(350, msec);
-    leftWing.set(false);
-    return 0;
-  });
-  turnToAngle(180, 800, true, 7);
-  matchloader.set(false);
-  driveTo(-29, 3000, true,4.6);
-  turnToAngle(-160, 900, true, 10);
-  stopChassis(brakeType::hold);
+  resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
+  turnToAngle(135, 2000, true, 12);
+  storeIntake();
+  resetOdometry(-72 + rightDistanceSensor.value()/25.4, y_pos);
+  driveToHeading(3, 135, 2000, false, 10);
+  turnToAngle(180, 1200, true, 10);
+  stopChassis(coast);
+  matchloader.set(true);
+  driveToHeading(-17.5, 180, 1200, true, 5);
+  turnToAngle(-135, 1200, true, 8);
 }
 //   heading_correction_kp = 0.8;
 //   vex::task antiJamF([]{
@@ -1104,7 +1180,7 @@ dir_change_end = true;
 //   heading_correction_kp = 0.67;
   
   //
-void rifour(){
+void rifour(int isRed){
   heading_correction_kp = 0.8;
   vex::task antiJamF([]{
     while(1){
@@ -1122,32 +1198,25 @@ void rifour(){
     return 0;
   });
   //goes to stack
-  moveToPoint(9.4, 24, 1, 2000, false, 8);
-  turnToAngle(140, 300, false, 7);
+  moveToPoint(10, 26, 1, 2000, false, 8);
   heading_correction_kp = 0.67;
-  correct_angle = normalizeTarget(165);
-  matchloader.set(false);
   //moveToPoint(31, 10, 1, 2000, false, 12);
   heading_correction_kp = 0.8;
-  moveToPoint(39, 5, 1, 2000, false, 8);
-  turnToAngle(180,1000,true,6);
-  driveToHeading(-27,180,1000,true,6);
-  scoreLongGoal();
+  moveToPoint(34, 0, -1, 2000, false, 10);
+  turnToAngle(180,1000,true,8);
+  driveToHeading(-19.2,180,1000,true,11);
+  colorSortLong(isRed, 1600);
   driveChassis(0,0);
-  vex::wait(1.85, sec);
   heading_correction_kp = 1.1;
 
-  leftWing.set(true);
-  curveCircle(120, -14, 1000, false, 9);
-  driveTo(2.5, 3000, false, 10);
-  vex::task wingdep([]{
-    vex::wait(350, msec);
-    leftWing.set(false);
-    return 0;
-  });
-  turnToAngle(180, 800, true, 7);
-  driveTo(-31, 3000, true,4);
-  turnToAngle(-160, 900, true, 10);
- 
-  stopChassis(brakeType::hold);
+  resetOdometry(-72 + frontDistanceSensor.value()/25.4, 72 - rightDistanceSensor.value()/25.4);
+  turnToAngle(135, 2000, true, 12);
+  storeIntake();
+  resetOdometry(-72 + rightDistanceSensor.value()/25.4, y_pos);
+  driveToHeading(3, 135, 2000, false, 10);
+  turnToAngle(180, 1200, true, 10);
+  stopChassis(coast);
+  matchloader.set(true);
+  driveToHeading(-17.5, 180, 1200, true, 5);
+  turnToAngle(-135, 1200, true, 8);
 }
